@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        #chat-container {
+            width: 50%;
+            max-width: 600px;
+            height: 500px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background: white;
+        }
+        #user-input {
+            width: 60%;
+            padding: 10px;
+        }
+        button {
+            padding: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>AI Chatbot</h2>
+    <div id="chat-container"></div>
+    <input type="text" id="user-input" placeholder="Ask me anything...">
+    <button onclick="sendMessage()">Send</button>
+    
+    <script>
+        async function sendMessage() {
+            let userInput = document.getElementById("user-input").value;
+            let chatContainer = document.getElementById("chat-container");
+            
+            chatContainer.innerHTML += `<p><strong>You:</strong> ${userInput}</p>`;
+            document.getElementById("user-input").value = "";
+            
+            let response = await fetch("https://api.openai.com/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer YOUR_OPENAI_API_KEY"
+                },
+                body: JSON.stringify({
+                    model: "gpt-4",
+                    messages: [{ role: "user", content: userInput }]
+                })
+            });
+            
+            let data = await response.json();
+            let botReply = data.choices[0].message.content;
+            
+            chatContainer.innerHTML += `<p><strong>Bot:</strong> ${botReply}</p>`;
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    </script>
+</body>
+</html>
